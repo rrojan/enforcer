@@ -6,44 +6,27 @@ import (
 	"strings"
 )
 
-func HandleMatch(fieldValue, fieldName, opt string) string {
-	if opt == "match:email" {
-		emailPattern := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
-		match, err := regexp.MatchString(emailPattern, fieldValue)
-		if err != nil {
-			return fmt.Sprintf("Invalid pattern for field '%s'", fieldName)
-		}
-
-		if !match {
-			return fmt.Sprintf("Field '%s' does not match email pattern", fieldName)
-		}
-
-		return ""
-	}
-
-	if opt == "match:phone" {
-		emailPattern := `^[0-9\\-]{7,12}$`
-		match, err := regexp.MatchString(emailPattern, fieldValue)
-		if err != nil {
-			return fmt.Sprintf("Invalid format for field '%s'", fieldName)
-		}
-
-		if !match {
-			return fmt.Sprintf("Field '%s' does not match phone format", fieldName)
-		}
-
-		return ""
-	}
-
-	pattern := strings.TrimPrefix(opt, "match:")
+func matchPattern(pattern, fieldValue, fieldName string) string {
 	match, err := regexp.MatchString(pattern, fieldValue)
 	if err != nil {
-		return fmt.Sprintf("Invalid format for field '%s'", fieldName)
+		return fmt.Sprintf("Invalid pattern for field '%s'", fieldName)
 	}
-
 	if !match {
-		return fmt.Sprintf("Field '%s' does not match pattern", fieldName)
+		return fmt.Sprintf("Field '%s' does not match email pattern", fieldName)
+	}
+	return ""
+}
+
+func HandleMatch(fieldValue, fieldName, opt string) string {
+	var pattern string
+	switch opt {
+	case "match:email":
+		pattern = `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
+	case "match:phone":
+		pattern = `^[0-9\\-]{7,12}$`
+	default:
+		pattern = strings.TrimPrefix(opt, "match:")
 	}
 
-	return ""
+	return matchPattern(pattern, fieldValue, fieldName)
 }
