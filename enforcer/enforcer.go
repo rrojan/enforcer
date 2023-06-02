@@ -1,14 +1,13 @@
 package enforcer
 
 import (
-	"fmt"
 	"reflect"
-	"regexp"
-	"strconv"
 	"strings"
+
+	"github.com/rrojan/enforcer/enforcer/enforcements"
 )
 
-// Validate validates the fields of the given struct based on the `enforce` tags
+// Validate fields of a given struct based on `enforce` tags
 func Validate(req interface{}) []string {
 	v := reflect.ValueOf(req)
 	if v.Kind() == reflect.Ptr {
@@ -21,51 +20,32 @@ func Validate(req interface{}) []string {
 		field := t.Field(i)
 		enforceTag := field.Tag.Get("enforce")
 
-		if enforceTag == "" {
-			return []string{}
-		}
+		if enforceTag != "" {
+			fieldValue := v.Field(i).String()
+			enforceOpts := strings.Split(enforceTag, " ")
 
-		fieldValue := v.Field(i).String()
-		enforceOpts := strings.Split(enforceTag, " ")
-
-		for _, opt := range enforceOpts {
-			if opt == "required" && fieldValue == "" {
-				errors = append(errors, "Required field "+field.Name+" is absent")
-			}
-
-			if strings.HasPrefix(opt, "between") {
-				rangeVals := strings.Split(strings.TrimPrefix(opt, "between:"), ",")
-				fmt.Println("---")
-				fmt.Printf("\n%+v\n", rangeVals)
-				fmt.Printf("\n%+v\n", fieldValue)
-				fmt.Println("---")
-				
-				min, err1 := strconv.Atoi(rangeVals[0])
-				max, err2 := strconv.Atoi(rangeVals[1])
-				
-				if len(rangeVals) != 2 || err1 != nil || err2 != nil {
-					errors = append(errors, "Invalid range values for field "+field.Name)
-					continue
-				}
-				if len(fieldValue) < min || len(fieldValue) > max {
-					errors = append(errors, "Field "+field.Name+" must be between "+rangeVals[0]+" and "+rangeVals[1]+" characters")
-				}
-			}
-
-			if strings.HasPrefix(opt, "match") {
-				pattern := strings.TrimPrefix(opt, "match:")
-				match, err := regexp.MatchString(pattern, fieldValue)
-				if err != nil {
-					errors = append(errors, "Invalid pattern for field "+field.Name)
-					continue
-				}
-
-				if !match {
-					errors = append(errors, "Field "+field.Name+" does not match pattern")
+			for _, opt := range enforceOpts {
+				switch {
+				case opt == "required":
+					err := enforcements.HandleRequired(fieldValue, field.Name)
+					if err != "" {
+						errors = append(errors, err)
+					}
+				case strings.HasPrefix(opt, "between"):
+					err := enforcements.HandleBetween(fieldValue, field.Name, opt)
+					if err != "" {
+						errors = append(errors, err)
+					}
+				case strings.HasPrefix(opt, "match"):
+					err := enforcements.HandleMatch(fieldValue, field.Name, opt)
+					if err != "" {
+						errors = append(errors, err)
+					}
+				// Add additional handlers for other enforcements as required
+					// ...
 				}
 			}
 		}
-		
 	}
 
 	return errors
