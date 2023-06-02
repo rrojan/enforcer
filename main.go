@@ -8,8 +8,7 @@ import (
 type ReqStruct struct {
 	Name  string `json:"name" enforce:"required between:2,10"`
 	Email string `json:"email" enforce:"required match:email"`
-	Phone string `json:"phone" enforce:"required"`
-	// match:/[^0-9]*1[34578][0-9]{9}[^0-9]*/
+	Phone string `json:"phone" enforce:"required match:^[0-9\\-]{7,12}$"`
 }
 
 func main() {
@@ -29,7 +28,7 @@ func main() {
 		}
 
 		// Process the valid request here
-		c.JSON(200, gin.H{"message": "Request validated successfully"})
+		c.JSON(200, gin.H{"message": "Request validates successfully"})
 	})
 
 	router.Run(":6969")
