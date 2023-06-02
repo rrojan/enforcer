@@ -9,9 +9,8 @@ import (
 func matchPattern(pattern, fieldValue, fieldName, customErrorMessage string) string {
 	match, err := regexp.MatchString(pattern, fieldValue)
 	if err != nil {
-		return fmt.Sprintf("Invalid pattern for field '%s'", fieldName)
-	}
-	if !match {
+		return fmt.Sprintf("Invalid pattern for field '%s' %s", fieldName, err)
+	} else if !match {
 		if customErrorMessage != "" {
 			return customErrorMessage
 		}
@@ -22,7 +21,6 @@ func matchPattern(pattern, fieldValue, fieldName, customErrorMessage string) str
 
 func HandleMatch(fieldValue, fieldName, opt string) string {
 	pattern := ""
-	customErrorMessage := ""
 	switch opt {
 	case "match:email":
 		pattern = `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
@@ -31,11 +29,21 @@ func HandleMatch(fieldValue, fieldName, opt string) string {
 	case "match:password":
 		// At least one uppercase letter, one lowercase letter,
 		// one digit, and one special character
-		pattern = `^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*\p{P})(?!.*\s).*$`
-		customErrorMessage = "Passwords must contain at least one uppercase letter, one lowercase letter, one digit, and one special character"
+		if !containsUppercase(fieldValue) {
+			return fmt.Sprintf("Field '%s' must contain at least one uppercase letter", fieldName)
+		}
+		if !containsLowercase(fieldValue) {
+			return fmt.Sprintf("Field '%s' must contain at least one lowercase letter", fieldName)
+		}
+		if !containsDigit(fieldValue) {
+			return fmt.Sprintf("Field '%s' must contain at least one digit", fieldName)
+		}
+		if !containsSpecialCharacter(fieldValue) {
+			return fmt.Sprintf("Field '%s' must contain at least one special character", fieldName)
+		}
 	default:
 		pattern = strings.TrimPrefix(opt, "match:")
 	}
 
-	return matchPattern(pattern, fieldValue, fieldName, customErrorMessage)
+	return matchPattern(pattern, fieldValue, fieldName, "")
 }

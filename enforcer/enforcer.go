@@ -36,6 +36,16 @@ func Validate(req interface{}) []string {
 					if err != "" {
 						errors = append(errors, err)
 					}
+				case strings.HasPrefix(opt, "min"):
+					err := enforcements.HandleMin(fieldValue, field.Name, opt)
+					if err != "" {
+						errors = append(errors, err)
+					}
+				case strings.HasPrefix(opt, "max"):
+					err := enforcements.HandleMax(fieldValue, field.Name, opt)
+					if err != "" {
+						errors = append(errors, err)
+					}
 				case strings.HasPrefix(opt, "match"):
 					err := enforcements.HandleMatch(fieldValue, field.Name, opt)
 					if err != "" {
