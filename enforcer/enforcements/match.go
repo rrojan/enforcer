@@ -21,10 +21,24 @@ func HandleMatch(fieldValue, fieldName, opt string) string {
 		return ""
 	}
 
+	if opt == "match:phone" {
+		emailPattern := `^[0-9\\-]{7,12}$`
+		match, err := regexp.MatchString(emailPattern, fieldValue)
+		if err != nil {
+			return fmt.Sprintf("Invalid format for field '%s'", fieldName)
+		}
+
+		if !match {
+			return fmt.Sprintf("Field '%s' does not match phone format", fieldName)
+		}
+
+		return ""
+	}
+
 	pattern := strings.TrimPrefix(opt, "match:")
 	match, err := regexp.MatchString(pattern, fieldValue)
 	if err != nil {
-		return fmt.Sprintf("Invalid pattern for field '%s'", fieldName)
+		return fmt.Sprintf("Invalid format for field '%s'", fieldName)
 	}
 
 	if !match {
