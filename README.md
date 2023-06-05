@@ -35,7 +35,13 @@ name string `enforce:"required min:2 max:20 matches:^[A-Z][a-z]+(?: [A-Z][a-z]+)
 ### Custom validations:
 - Use custom validations like below
 
-<img width="695" alt="image" src="https://github.com/rrojan/enforcer/assets/59971845/8db26b02-b4a2-49ac-b94e-e436114210af">
+```
+type ProductReq struct {
+  Title string `json:"Title" enforce:"custom:productTitleTemplate"`
+  Price int `json:"price"`
+  IsPublished int `json:"is_published"`
+}	
+```
 
 ```
 req := ProductReq{}
