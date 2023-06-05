@@ -5,9 +5,7 @@
 
 <WIP>
 
-Enforcer simplified the tedious validation process in Go applications. 
-
-Forget messy validation code, enforcer is here to enforce your will with a few Go tags and maps.
+Enforcer simplifies the tedious validation process in Go applications. Forget messy validation code, enforcer is here to enforce your will with a few Go tags and maps.
 
 
 ### See `main.go` for example gin application using Enforcer
