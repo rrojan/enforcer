@@ -37,5 +37,20 @@ name string `enforce:"required min:2 max:20 matches:^[A-Z][a-z]+(?: [A-Z][a-z]+)
 
 <img width="695" alt="image" src="https://github.com/rrojan/enforcer/assets/59971845/8db26b02-b4a2-49ac-b94e-e436114210af">
 
-<img width="603" alt="image" src="https://github.com/rrojan/enforcer/assets/59971845/033d289c-dcac-454a-8045-d370500fa0a0">
-
+```
+req := ProductReq{}
+	customEnforcements := []map[string]func(string) bool{
+		{
+			"productTitleTemplate": func(productTitle string) bool {
+				isValid := true // validation logic
+				return isValid
+			},
+			"isNotOverpriced": func(priceStr string) bool {
+				price, _ := strconv.Atoi(priceStr)
+				isValid := price < somePriceValidationQuery()
+				return isValid
+			},
+		},
+	}
+	errors := enforcer.CustomValidator(req, customEnforcements)
+```
