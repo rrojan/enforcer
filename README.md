@@ -37,26 +37,26 @@ name string `enforce:"required min:2 max:20 matches:^[A-Z][a-z]+(?: [A-Z][a-z]+)
 
 ```
 type ProductReq struct {
-  Title string `json:"Title" enforce:"custom:productTitleTemplate"`
-  Price int `json:"price"`
-  IsPublished int `json:"is_published"`
+  Title       string `json:"Title" enforce:"custom:productTitleTemplate"`
+  Price       int    `json:"price" enforce:"custom:isNotOverpriced"`
+  IsPublished int    `json:"is_published"`
 }	
 ```
 
 ```
 req := ProductReq{}
-	customEnforcements := []map[string]func(string) bool{
-		{
-			"productTitleTemplate": func(productTitle string) bool {
-				isValid := true // validation logic
-				return isValid
-			},
-			"isNotOverpriced": func(priceStr string) bool {
-				price, _ := strconv.Atoi(priceStr)
-				isValid := price < somePriceValidationQuery()
-				return isValid
-			},
-		},
-	}
-	errors := enforcer.CustomValidator(req, customEnforcements)
+customEnforcements := []map[string]func(string) bool{
+  {
+    "productTitleTemplate": func(productTitle string) bool {
+      isValid := true // validation logic
+      return isValid
+    },
+    "isNotOverpriced": func(priceStr string) bool {
+      price, _ := strconv.Atoi(priceStr)
+      isValid := price < somePriceValidationQuery()
+      return isValid
+    },
+  },
+}
+errors := enforcer.CustomValidator(req, customEnforcements)
 ```
