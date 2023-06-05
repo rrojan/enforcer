@@ -15,7 +15,10 @@ Forget messy validation code, enforcer is here to enforce your will with a few G
 ### Usage:
 - Use ``enforce`` to validate enforcements
 
-E.g. `name string `enforce:"required min:2 max: 20 matches:^[A-Z][a-z]+(?: [A-Z][a-z]+)*"``
+E.g. 
+```
+name string `enforce:"required min:2 max: 20 matches:^[A-Z][a-z]+(?: [A-Z][a-z]+)*"`
+```  
 
 ---
 
