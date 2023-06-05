@@ -26,11 +26,39 @@ name string `enforce:"required between:2,64 matches:^[A-Z][a-z]+(?: [A-Z][a-z]+)
 - limits for int / float and derivatives (`between`, `min`, `max`)
 - `match` (match emails, passwords, phone numbers, or your own custom regex patterns)
 - `enum` (enforce enum options for string, int, etc)
-  
 
-<img width="883" alt="image" src="https://github.com/rrojan/enforcer/assets/59971845/d8df7c8d-6ead-46d7-8a35-279f015eb814">
-<img width="747" alt="image" src="https://github.com/rrojan/enforcer/assets/59971845/335e505a-4205-4a3b-8a42-8d6815c78aeb">
+```
+type SignupReq struct {
+	// Name -> Enforce `required` and `length` between 2 chars and 10 chars
+	// Email -> Enforce `required` and `pattern` matches email
+	// Phone -> Enforce `pattern` matches custom regex
+	// Password -> Enforce `required`, `min` char value, `max` char value and `match` for password validity
+	//     (We can also use `between` but this shows how we can use min / max separately)
+	// UserType -> Enforce `enum` which can be "admin" or "user"
+	Name  string `json:"name" enforce:"required between:2,10"`
+	Email string `json:"email" enforce:"required match:email"`
+	Phone string `json:"phone" enforce:"match:^[0-9\\-]{7,12}$"`
+	Password string `json:"password" enforce:"required min:6 max:64 match:password"`
+	Age int `json:"age" enforce:"min:18"`
+	UserType string `json:"user_type" enforce:"required enum:admin,user"`
+}
+```
 
+```
+req := SignupReq{}
+if err := c.ShouldBindJSON(&req); err != nil {
+  c.JSON(400, gin.H{"error": err.Error()})
+  return
+}
+
+// enforcer.Validate reads the `enforce:"..."` tags and applies enforcements
+errors := enforcer.Validate(req)
+
+if len(errors) > 0 {
+  c.JSON(400, gin.H{"errors": errors})
+  return
+}
+```
 
 ### Custom validations:
 - Use custom validations like below
@@ -45,6 +73,10 @@ type ProductReq struct {
 
 ```
 req := ProductReq{}
+if err := c.ShouldBindJSON(&req); err != nil {
+  c.JSON(400, gin.H{"error": err.Error()})
+  return
+}
 customEnforcements := []map[string]func(string) bool{
   {
     "productTitleTemplate": func(productTitle string) bool {
