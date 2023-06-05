@@ -15,7 +15,7 @@ Enforcer simplifies the tedious validation process in Go applications. Forget me
 
 E.g. 
 ```
-name string `enforce:"required min:2 max: 20 matches:^[A-Z][a-z]+(?: [A-Z][a-z]+)*"`
+name string `enforce:"required min:2 max:20 matches:^[A-Z][a-z]+(?: [A-Z][a-z]+)*"`
 ```  
 
 ---
