@@ -1,5 +1,5 @@
 # Enforcer
-## Simplified validations for Go applications
+## Simplified validation for Go applications
 
 ---
 
