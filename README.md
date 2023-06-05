@@ -29,18 +29,18 @@ name string `enforce:"required between:2,64 matches:^[A-Z][a-z]+(?: [A-Z][a-z]+)
 
 ```
 type SignupReq struct {
-	// Name -> Enforce `required` and `length` between 2 chars and 10 chars
-	// Email -> Enforce `required` and `pattern` matches email
-	// Phone -> Enforce `pattern` matches custom regex
-	// Password -> Enforce `required`, `min` char value, `max` char value and `match` for password validity
-	//     (We can also use `between` but this shows how we can use min / max separately)
-	// UserType -> Enforce `enum` which can be "admin" or "user"
-	Name  string `json:"name" enforce:"required between:2,10"`
-	Email string `json:"email" enforce:"required match:email"`
-	Phone string `json:"phone" enforce:"match:^[0-9\\-]{7,12}$"`
-	Password string `json:"password" enforce:"required min:6 max:64 match:password"`
-	Age int `json:"age" enforce:"min:18"`
-	UserType string `json:"user_type" enforce:"required enum:admin,user"`
+  // Name -> Enforce `required` and `length` between 2 chars and 10 chars
+  // Email -> Enforce `required` and `pattern` matches email
+  // Phone -> Enforce `pattern` matches custom regex
+  // Password -> Enforce `required`, `min` char value, `max` char value and `match` for password validity
+  //     (We can also use `between` but this shows how we can use min / max separately)
+  // UserType -> Enforce `enum` which can be "admin" or "user"
+  Name  string    `json:"name"     enforce:"required between:2,10"`
+  Email string    `json:"email"    enforce:"required match:email"`
+  Phone string    `json:"phone"    enforce:"match:^[0-9\\-]{7,12}$"`
+  Password string `json:"password" enforce:"required min:6 max:64 match:password"`
+  Age int         `json:"age"      enforce:"min:18"`
+  UserType string `json:"type"     enforce:"required enum:admin,user"`
 }
 ```
 
