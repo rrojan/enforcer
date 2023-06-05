@@ -37,9 +37,9 @@ name string `enforce:"required min:2 max:20 matches:^[A-Z][a-z]+(?: [A-Z][a-z]+)
 
 ```
 type ProductReq struct {
-  Title       string `json:"Title" enforce:"custom:productTitleTemplate"`
-  Price       int    `json:"price" enforce:"custom:isNotOverpriced"`
-  IsPublished int    `json:"is_published"`
+  Title       string `enforce:"required custom:productTitleTemplate"`
+  Price       int    `enforce:"required custom:isNotOverpriced"`
+  IsPublished int
 }	
 ```
 
