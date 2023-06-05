@@ -66,7 +66,7 @@ if len(errors) > 0 {
 ```
 type ProductReq struct {
   Title       string `enforce:"required custom:productTitleTemplate"`
-  Price       int    `enforce:"required custom:isNotOverpriced min:1000"`
+  Price       int    `enforce:"required custom:isNotOverpriced,canUserSetPrice min:1000"`
   IsPublished int
 }	
 ```
@@ -86,6 +86,11 @@ customEnforcements := []map[string]func(string) bool{
     "isNotOverpriced": func(priceStr string) bool {
       price, _ := strconv.Atoi(priceStr)
       isValid := price < somePriceValidationQuery()
+      return isValid
+    },
+    "canUserSetPrice": func(priceStr string) bool {
+      price, _ := strconv.Atoi(priceStr)
+      isValid := priceRoleValidate(price)
       return isValid
     },
   },
