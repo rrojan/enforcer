@@ -1,7 +1,16 @@
 package enforcements
 
-import "strings"
+import (
+	"regexp"
+	"strings"
+)
 
+
+func ExtractNumber(str string) string {
+	re := regexp.MustCompile(`\d+`)
+	match := re.FindString(str)
+	return match
+}
 
 func containsUppercase(s string) bool {
 	for _, c := range s {
