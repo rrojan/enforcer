@@ -40,9 +40,18 @@ func Validate(req interface{}) []string {
 						errors = append(errors, err)
 					}
 				case strings.HasPrefix(opt, "between"):
-					err := enforcements.HandleBetween(fieldString, field.Name, opt)
-					if err != "" {
-						errors = append(errors, err)
+					if fieldType.Kind() == reflect.Int {
+						err := enforcements.HandleBetweenInt(fieldValue.Int(), field.Name, opt)
+						if err != "" {
+							errors = append(errors, err)
+						}
+					} else if fieldType.Kind() == reflect.String {
+						err := enforcements.HandleBetweenStr(fieldString, field.Name, opt)
+						if err != "" {
+							errors = append(errors, err)
+						}
+					} else {
+						errors = append(errors, fmt.Sprintf("Unsupported type for field '%s'", field.Name))
 					}
 				case strings.HasPrefix(opt, "min"):
 					if fieldType.Kind() == reflect.Int {
