@@ -17,8 +17,8 @@ func HandleExcludeStr(fieldValue, fieldName, opt string) string {
 	return ""
 }
 
-func HandleExcludeIntOrFloat(value interface{}, fieldName string, enumOptions string) string {
-	excludeValues := strings.Split(strings.TrimPrefix(enumOptions, "exclude:"), ",")
+func HandleExcludeIntOrFloat(value interface{}, fieldName string, excludeOptions string) string {
+	excludeValues := strings.Split(strings.TrimPrefix(excludeOptions, "exclude:"), ",")
 	for _, enumStr := range excludeValues {
 		switch reflect.TypeOf(value).Kind() {
 		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
