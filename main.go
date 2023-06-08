@@ -36,6 +36,8 @@ func main() {
 	router.POST("/signup", SignupController)
 	// Example usage of custom enforcer function
 	router.POST("/products", ProductCreateController)
+	// Example usage of single variable enforcer
+	router.GET("/single", ValidateVariableController)
 
 	router.Run(":6969")
 }
@@ -60,6 +62,16 @@ func SignupController(c *gin.Context) {
 
 func somePriceValidationQuery() int {
 	return 1000
+}
+
+func ValidateVariableController (c *gin.Context) {
+	a := 9
+	errors := enforcer.ValidateVar(a, "required min:1000")
+	if len(errors) > 0 {
+		c.JSON(400, gin.H{"errors": errors})
+		return
+	}
+	c.JSON(200, gin.H{"message": "Successfully validated var"})
 }
 
 func ProductCreateController(c *gin.Context) {
