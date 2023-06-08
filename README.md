@@ -22,6 +22,7 @@ go get -u github.com/rrojan/enforcer
 E.g. 
 ```
 type myStruct struct {
+  // Name is a required field with 2-64 char limit and should be "Spaced And Camel Cased"
   name string `enforce:"required between:2,64 matches:^[A-Z][a-z]+(?: [A-Z][a-z]+)*"`
 }
 ```  
@@ -30,7 +31,9 @@ type myStruct struct {
 
 ### Simple validations:
 - `required`: mark a field as required
-- `between`, `min`, `max`: string length and numerical limits ()
+- `between`: string length or numerical value limit
+- `min`: Minimum char length for string or minimum value for numeric type
+- `max`: Maximum char length for string or maximum value for numeric type
 - `match`: match emails, passwords, phone numbers, or your own custom regex patterns
 - `enum`: enforce enum options for string, int, etc
 - `exclude`: check whether value is in a list of excluded values
@@ -38,26 +41,25 @@ type myStruct struct {
 
 ```
 type SignupReq struct {
-  // Name -> Enforce `required` and `length` between 2 chars and 10 chars
+  // Name -> Enforce "required" and length "between" 2 chars and 10 chars
   Name  string    `json:"name"     enforce:"required between:2,10"`
   
-  // Email -> Enforce `required` and `pattern` matches email
+  // Email -> Enforce "required" and pattern "match" for email
   Email string    `json:"email"    enforce:"required match:email"`
   
-  // Phone -> Enforce `pattern` matches custom regex
+  // Phone -> Enforce pattern "match" for custom regex
   Phone string    `json:"phone"    enforce:"match:^[0-9\\-]{7,12}$"`
   
-  // Password -> Enforce `required`, `min` char value, `max` char value and `match` for password validity
-  //     (We can also use `between` but this shows how we can use min / max separately)
-  Password string `json:"password" enforce:"required match:password min:6 max:64"`
+  // Password -> Enforce "required", "min" char limit, "max" char limit and "match" for password validity
+  Password string `json:"password" enforce:"required match:password"`
   
-  // Age -> Enforce minimum signup age (number) to be 18
-  Age int         `json:"age"      enforce:"min:18"`
+  // Age -> Enforce "min" and "max" signup age (number) to be in range 18-100 (we can use `between` for this as well)
+  Age int         `json:"age"      enforce:"min:18 max:100"`
   
-  // UserType -> Enforce `enum` which can be "admin" or "user"
+  // UserType -> Enforce "enum" which lets the value be "admin" or "user"
   UserType string `json:"type"     enforce:"required enum:admin,user"`
   
-  // Bio -> Minimum of 3 words, maximum of 150 words, and a 256 character limit
+  // Bio -> Minimum of 3 "wordCount", maximum of 150, and a max" 256 character limit
   Bio string      `json:"bio"      enforce:"wordCount:3,150 max:256" 
 }
 ```
