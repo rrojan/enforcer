@@ -50,9 +50,6 @@ type SignupReq struct {
   // Phone -> Enforce pattern "match" for custom regex
   Phone string    `json:"phone"    enforce:"match:^[0-9\\-]{7,12}$"`
   
-  // Password -> Enforce "required", "min" char limit, "max" char limit and "match" for password validity
-  Password string `json:"password" enforce:"required match:password"`
-  
   // Age -> Enforce "min" and "max" signup age (number) to be in range 18-100 (we can use `between` for this as well)
   Age int         `json:"age"      enforce:"min:18 max:100"`
   
@@ -60,7 +57,10 @@ type SignupReq struct {
   UserType string `json:"type"     enforce:"required enum:admin,user"`
   
   // Bio -> Minimum of 3 "wordCount", maximum of 150, and a max" 256 character limit
-  Bio string      `json:"bio"      enforce:"wordCount:3,150 max:256" 
+  Bio string      `json:"bio"      enforce:"wordCount:3,150 max:256"
+  
+  // Password -> Enforce "required", "min" char limit, "max" char limit and "match" for password validity
+  Password string `json:"password" enforce:"required match:password"`
 }
 ```
 
@@ -78,9 +78,7 @@ if err := c.ShouldBindJSON(&req); err != nil {
 // enforcer.Validate reads the `enforce:"..."` tags and applies enforcements
 errors := enforcer.Validate(req)
 
-if len(errors) > 0 {
-  c.JSON(400, gin.H{"errors": errors})
-  return
+// This is an array of all errors present
 }
 ```
 
@@ -109,7 +107,7 @@ if err := c.ShouldBindJSON(&req); err != nil {
   c.JSON(400, gin.H{"error": err.Error()})
   return
 }
-customEnforcements := []map[string]func(string) bool{
+customEnforcements := []map[string]func(string) string{
   {
     "productTitleTemplate": func(productTitle string) string {
       // Apply validation logic here
@@ -119,7 +117,7 @@ customEnforcements := []map[string]func(string) bool{
       }
       return ""
     },
-    "isNotOverpriced": func(priceStr string) bool {
+    "isNotOverpriced": func(priceStr string) string {
       price, _ := strconv.Atoi(priceStr)
       isValid := price < somePriceValidationQuery()
       if !isValid {
@@ -127,7 +125,7 @@ customEnforcements := []map[string]func(string) bool{
       }
       return ""
     },
-    "canUserSetPrice": func(priceStr string) bool {
+    "canUserSetPrice": func(priceStr string) string {
       price, _ := strconv.Atoi(priceStr)
       isValid := priceRoleValidate(price)
       if !isValid {
