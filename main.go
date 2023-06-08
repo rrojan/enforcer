@@ -19,7 +19,7 @@ type SignupReq struct {
 	Email    string `json:"email" enforce:"required match:email"`
 	Phone    string `json:"phone" enforce:"match:^[0-9\\-]{7,12}$"`
 	Password string `json:"password" enforce:"required min:6 max:32 match:password"`
-	Age      int    `json:"age" enforce:"between:2,10 enum:3,4"`
+	Age      int    `json:"age" enforce:"between:2,10 exclude:9 enum:3,4"`
 	// UserType string `json:"user_type" enforce:"required enum:admin,user"`
 }
 

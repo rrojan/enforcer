@@ -105,11 +105,25 @@ func Validate(req interface{}) []string {
 					} else {
 						errors = append(errors, fmt.Sprintf("Unsupported type for field '%s'", field.Name))
 					}
-					// case strings.HasPrefix(opt, "exclude"):
-					// 	err := enforcements.HandleExclude(fieldString, field.Name, opt)
-					// 	if err != "" {
-					// 		errors = append(errors, err)
-					// 	}
+				case strings.HasPrefix(opt, "exclude"):
+					if fieldType.Kind() == reflect.Int {
+						err := enforcements.HandleExcludeIntOrFloat(fieldValue.Int(), field.Name, opt)
+						if err != "" {
+							errors = append(errors, err)
+						}
+					} else if fieldType.Kind() == reflect.Float32 || fieldType.Kind() == reflect.Float64 {
+						err := enforcements.HandleExcludeIntOrFloat(fieldValue.Float(), field.Name, opt)
+						if err != "" {
+							errors = append(errors, err)
+						}
+					} else if fieldType.Kind() == reflect.String {
+						err := enforcements.HandleExcludeStr(fieldString, field.Name, opt)
+						if err != "" {
+							errors = append(errors, err)
+						}
+					} else {
+						errors = append(errors, fmt.Sprintf("Unsupported type for field '%s'", field.Name))
+					}
 					// Add additional handlers for other enforcements as required
 					// ...
 				}
