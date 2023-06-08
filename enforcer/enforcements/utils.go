@@ -5,7 +5,6 @@ import (
 	"strings"
 )
 
-
 func ExtractNumber(str string) string {
 	re := regexp.MustCompile(`\d+`)
 	match := re.FindString(str)

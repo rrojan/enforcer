@@ -15,18 +15,18 @@ type SignupReq struct {
 	// Password -> Enforce `required`, `min` char value, `max` char value and `match` for password validity
 	//     (We can also use `between` but this shows how we can use min / max separately)
 	// UserType -> Enforce `enum` which can be "admin" or "user"
-	Name  string `json:"name" enforce:"required between:2,10"`
-	Email string `json:"email" enforce:"required match:email"`
-	Phone string `json:"phone" enforce:"match:^[0-9\\-]{7,12}$"`
+	Name     string `json:"name" enforce:"required between:2,10"`
+	Email    string `json:"email" enforce:"required match:email"`
+	Phone    string `json:"phone" enforce:"match:^[0-9\\-]{7,12}$"`
 	Password string `json:"password" enforce:"required min:6 max:32 match:password"`
-	Age int `json:"age" enforce:"between:2,10"`
+	Age      int    `json:"age" enforce:"between:2,10 enum:3,4"`
 	// UserType string `json:"user_type" enforce:"required enum:admin,user"`
 }
 
 type ProductReq struct {
-	Title string `json:"Title" enforce:"custom:productTitleTemplate"`
-	Price int `json:"price"`
-	IsPublished int `json:"is_published"`
+	Title       string `json:"Title" enforce:"custom:productTitleTemplate"`
+	Price       int    `json:"price"`
+	IsPublished int    `json:"is_published"`
 }
 
 func main() {
@@ -96,6 +96,3 @@ func ProductCreateController(c *gin.Context) {
 	// Process the valid request here
 	c.JSON(200, gin.H{"message": "Signed up user successfully"})
 }
-
-
-

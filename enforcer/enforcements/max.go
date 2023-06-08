@@ -5,10 +5,9 @@ import (
 	"strconv"
 )
 
-
 func HandleMaxStr(fieldValue, fieldName, opt string) string {
 	opt = ExtractNumber(opt)
-	
+
 	minVal, err := strconv.Atoi(opt)
 	if err != nil {
 		return fmt.Sprintf("Invalid max value for field '%s'", fieldName)
@@ -22,7 +21,7 @@ func HandleMaxStr(fieldValue, fieldName, opt string) string {
 
 func HandleMaxInt(fieldValue int64, fieldName, opt string) string {
 	opt = ExtractNumber(opt)
-	
+
 	minVal, err := strconv.Atoi(opt)
 	if err != nil {
 		return fmt.Sprintf("Invalid max value for field '%s'", fieldName)

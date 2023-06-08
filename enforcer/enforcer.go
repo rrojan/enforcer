@@ -8,7 +8,7 @@ import (
 	"github.com/rrojan/enforcer/enforcer/enforcements"
 )
 
-func CustomValidator(req interface{}, customEnforcements[]map[string]func(string) bool) []string {
+func CustomValidator(req interface{}, customEnforcements []map[string]func(string) bool) []string {
 	return []string{}
 }
 
@@ -86,7 +86,31 @@ func Validate(req interface{}) []string {
 					if err != "" {
 						errors = append(errors, err)
 					}
-				// Add additional handlers for other enforcements as required
+				case strings.HasPrefix(opt, "enum"):
+					if fieldType.Kind() == reflect.Int {
+						err := enforcements.HandleEnumIntOrFloat(fieldValue.Int(), field.Name, opt)
+						if err != "" {
+							errors = append(errors, err)
+						}
+					} else if fieldType.Kind() == reflect.Float32 || fieldType.Kind() == reflect.Float64 {
+						err := enforcements.HandleEnumIntOrFloat(fieldValue.Float(), field.Name, opt)
+						if err != "" {
+							errors = append(errors, err)
+						}
+					} else if fieldType.Kind() == reflect.String {
+						err := enforcements.HandleEnumStr(fieldString, field.Name, opt)
+						if err != "" {
+							errors = append(errors, err)
+						}
+					} else {
+						errors = append(errors, fmt.Sprintf("Unsupported type for field '%s'", field.Name))
+					}
+					// case strings.HasPrefix(opt, "exclude"):
+					// 	err := enforcements.HandleExclude(fieldString, field.Name, opt)
+					// 	if err != "" {
+					// 		errors = append(errors, err)
+					// 	}
+					// Add additional handlers for other enforcements as required
 					// ...
 				}
 			}

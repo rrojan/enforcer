@@ -6,7 +6,6 @@ import (
 	"strings"
 )
 
-
 func HandleBetweenInt(fieldValue int64, fieldName, opt string) string {
 	rangeVals := strings.Split(strings.TrimPrefix(opt, "between:"), ",")
 	if len(rangeVals) != 2 {
@@ -29,8 +28,6 @@ func HandleBetweenInt(fieldValue int64, fieldName, opt string) string {
 
 	return ""
 }
-
-
 
 func HandleBetweenStr(fieldValue, fieldName, opt string) string {
 	rangeVals := strings.Split(strings.TrimPrefix(opt, "between:"), ",")
