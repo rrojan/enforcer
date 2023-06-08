@@ -32,7 +32,8 @@ func ApplyDefaults(v interface{}) error {
 
 		// Check if the field is empty (zero value)
 		if fieldValue.Kind() == reflect.String && fieldValue.String() == "" {
-			// Workaround to using reflect again
+			// Workaround to using reflect again but for the meanwhile it 
+			// wont support spaces ;(
 			defaultValue := strings.Split(tagValue, ":")[1]
 			defaultValue = strings.Split(defaultValue, " ")[0]
 			// Set the default value for the field
