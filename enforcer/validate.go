@@ -8,10 +8,6 @@ import (
 	"github.com/rrojan/enforcer/enforcer/enforcements"
 )
 
-func CustomValidator(req interface{}, customEnforcements []map[string]func(string) bool) []string {
-	return []string{}
-}
-
 // Validate fields of a given struct based on `enforce` tags
 func Validate(req interface{}) []string {
 	v := reflect.ValueOf(req)
