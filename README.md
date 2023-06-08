@@ -49,7 +49,7 @@ type SignupReq struct {
   
   // Password -> Enforce `required`, `min` char value, `max` char value and `match` for password validity
   //     (We can also use `between` but this shows how we can use min / max separately)
-  Password string `json:"password" enforce:"required match:password"`
+  Password string `json:"password" enforce:"required match:password min:6 max:64"`
   
   // Age -> Enforce minimum signup age (number) to be 18
   Age int         `json:"age"      enforce:"min:18"`
