@@ -26,6 +26,7 @@ name string `enforce:"required between:2,64 matches:^[A-Z][a-z]+(?: [A-Z][a-z]+)
 - limits for int / float and derivatives (`between`, `min`, `max`)
 - `match` (match emails, passwords, phone numbers, or your own custom regex patterns)
 - `enum` (enforce enum options for string, int, etc)
+- `exclude` (check whether value is in a list of excluded values)
 
 ```
 type SignupReq struct {
