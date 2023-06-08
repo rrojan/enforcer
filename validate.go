@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/rrojan/enforcer/enforcer/enforcements"
+	"github.com/rrojan/enforcer/enforcements"
 )
 
 // Validate fields of a given struct based on `enforce` tags

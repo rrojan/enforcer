@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/rrojan/enforcer/enforcer/enforcements"
+	"github.com/rrojan/enforcer/enforcements"
 )
 
 // ValidateVar validates an individual variable based on the provided enforcement tag
