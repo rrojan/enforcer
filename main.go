@@ -20,7 +20,7 @@ type SignupReq struct {
 	Phone    string `json:"phone" enforce:"match:^[0-9\\-]{7,12}$"`
 	Password string `json:"password" enforce:"required min:6 max:32 match:password"`
 	Age      int    `json:"age" enforce:"between:2,10 exclude:9 enum:3,4"`
-	// UserType string `json:"user_type" enforce:"required enum:admin,user"`
+	UserType string `json:"user_type" enforce:"required enum:admin,user"`
 }
 
 type ProductReq struct {
@@ -85,24 +85,34 @@ func ProductCreateController(c *gin.Context) {
 
 	customEnforcements := enforcer.CustomEnforcements{
 		{
-			"productTitleTemplate": func(productTitle string) bool {
+			"productTitleTemplate": func(productTitle string) string {
 				isValid := true // validation logic
-				return isValid
+				if !isValid {
+					return "Product title does not fit template"
+				}
+				return ""
 			},
-			"productTitleTemplate2": func(productTitle string) bool {
-				isValid := false // validation logic
-				return isValid
+			"productTitleTemplate2": func(productTitle string) string {
+				isValid := true // validation logic
+				if !isValid {
+					return "Product title does not fit template 2"
+				}
+				return ""
 			},
-			"isNotOverpriced": func(priceStr string) bool {
-				fmt.Println(priceStr, "wwww")
+			"isNotOverpriced": func(priceStr string) string {
 				price, _ := strconv.Atoi(priceStr)
 				isValid := price < somePriceValidationQuery()
-				return isValid
+				if !isValid {
+					return "Product is overpriced"
+				}
+				return ""
 			},
-			"isEvenNumber": func(priceStr string) bool {
+			"isEvenNumber": func(priceStr string) string {
 				price, _ := strconv.Atoi(priceStr)
-				fmt.Println(price)
-				return price%2 == 0
+				if price % 2 != 0 {
+					return "Number is not even!"
+				}
+				return ""
 			},
 		},
 	}

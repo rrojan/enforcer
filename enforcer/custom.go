@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-type CustomEnforcements []map[string]func(string) bool
+type CustomEnforcements []map[string]func(string) string 
 
 func CustomValidator(req interface{}, customEnforcements CustomEnforcements) []string {
 	errors := Validate(req)
@@ -40,11 +40,10 @@ func CustomValidator(req interface{}, customEnforcements CustomEnforcements) []s
 					enforcementNames := getCustomEnforcementNames(opt)
 					for _, enforcementName := range enforcementNames {
 						if enforcementFunc, ok := getCustomEnforcementFunc(customEnforcements, enforcementName); ok {
-							fmt.Printf("\n\n%#v\n\n", fieldValue)
 							// There's probably a better way to do all this
-							isValid := enforcementFunc(fieldString)
-							if !isValid {
-								errors = append(errors, fmt.Sprintf("Field '%s' failed custom validation '%s'", field.Name, enforcementName))
+							err := enforcementFunc(fieldString)
+							if err != "" {
+								errors = append(errors, err)
 							}
 						} else {
 							errors = append(errors, fmt.Sprintf("Custom enforcement '%s' not found for field '%s'", enforcementName, field.Name))
@@ -58,7 +57,9 @@ func CustomValidator(req interface{}, customEnforcements CustomEnforcements) []s
 	return errors
 }
 
-func getCustomEnforcementFunc(customEnforcements CustomEnforcements, enforcementName string) (func(string) bool, bool) {
+func getCustomEnforcementFunc(
+		customEnforcements CustomEnforcements, enforcementName string,
+	) (func(string) string, bool) {
 	for _, enforcementMap := range customEnforcements {
 		if enforcementFunc, ok := enforcementMap[enforcementName]; ok {
 			return enforcementFunc, true
