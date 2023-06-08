@@ -1,11 +1,12 @@
 # Enforcer
 ## Simplified validation for Go apps
 
+<img src="https://github.com/rrojan/enforcer/assets/59971845/efd66255-8538-4d50-8d20-4212ba0f26e1" width="40%">
+
 
 Enforcer simplifies the tedious validation process in Go applications. 
 
 Forget messy boilerplate-ridden validation code, enforcer is here to enforce your will with a few Go tags and maps!
-
 
 ---
 
