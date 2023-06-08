@@ -3,6 +3,7 @@ package enforcer
 import (
 	"fmt"
 	"reflect"
+	"strconv"
 	"strings"
 )
 
@@ -23,16 +24,25 @@ func CustomValidator(req interface{}, customEnforcements CustomEnforcements) []s
 		enforceTag := field.Tag.Get("enforce")
 
 		if enforceTag != "" {
-			fieldValue := v.Field(i).String()
+			fieldValue := v.Field(i)
+			fieldString := ""
+			fieldType := fieldValue.Type()
+			switch fieldType.Kind() {
+				case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+					fieldString = strconv.Itoa(int(fieldValue.Int()))
+				default:
+					fieldString = fieldValue.String()
+			}
 			enforceOpts := strings.Split(enforceTag, " ")
 
 			for _, opt := range enforceOpts {
-				switch {
-				case strings.HasPrefix(opt, "custom"):
+				if strings.HasPrefix(opt, "custom") {
 					enforcementNames := getCustomEnforcementNames(opt)
 					for _, enforcementName := range enforcementNames {
 						if enforcementFunc, ok := getCustomEnforcementFunc(customEnforcements, enforcementName); ok {
-							isValid := enforcementFunc(fieldValue)
+							fmt.Printf("\n\n%#v\n\n", fieldValue)
+							// There's probably a better way to do all this
+							isValid := enforcementFunc(fieldString)
 							if !isValid {
 								errors = append(errors, fmt.Sprintf("Field '%s' failed custom validation '%s'", field.Name, enforcementName))
 							}
@@ -40,8 +50,6 @@ func CustomValidator(req interface{}, customEnforcements CustomEnforcements) []s
 							errors = append(errors, fmt.Sprintf("Custom enforcement '%s' not found for field '%s'", enforcementName, field.Name))
 						}
 					}
-					// Handle other enforcements
-					// ...
 				}
 			}
 		}
