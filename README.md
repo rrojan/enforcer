@@ -7,15 +7,15 @@
 
 Enforcer simplifies the tedious validation process in Go applications. Forget messy validation code, enforcer is here to enforce your will with a few Go tags and maps.
 
-
-### See `main.go` for example gin application using Enforcer
-
+  
 ### Usage:
 - Use ``enforce`` to validate enforcements
 
 E.g. 
 ```
-name string `enforce:"required between:2,64 matches:^[A-Z][a-z]+(?: [A-Z][a-z]+)*"`
+type myStruct struct {
+  name string `enforce:"required between:2,64 matches:^[A-Z][a-z]+(?: [A-Z][a-z]+)*"`
+}
 ```  
 
 ---
