@@ -7,7 +7,6 @@ import (
 )
 
 type CustomEnforcements []map[string]func(string) bool
-
 func CustomValidator(req interface{}, customEnforcements CustomEnforcements) []string {
 	errors := Validate(req)
 
@@ -29,14 +28,16 @@ func CustomValidator(req interface{}, customEnforcements CustomEnforcements) []s
 			for _, opt := range enforceOpts {
 				switch {
 				case strings.HasPrefix(opt, "custom"):
-					enforcementName := strings.TrimPrefix(opt, "custom:")
-					if enforcementFunc, ok := getCustomEnforcementFunc(customEnforcements, enforcementName); ok {
-						isValid := enforcementFunc(fieldValue)
-						if !isValid {
-							errors = append(errors, fmt.Sprintf("Field '%s' failed custom validation '%s'", field.Name, enforcementName))
+					enforcementNames := getCustomEnforcementNames(opt)
+					for _, enforcementName := range enforcementNames {
+						if enforcementFunc, ok := getCustomEnforcementFunc(customEnforcements, enforcementName); ok {
+							isValid := enforcementFunc(fieldValue)
+							if !isValid {
+								errors = append(errors, fmt.Sprintf("Field '%s' failed custom validation '%s'", field.Name, enforcementName))
+							}
+						} else {
+							errors = append(errors, fmt.Sprintf("Custom enforcement '%s' not found for field '%s'", enforcementName, field.Name))
 						}
-					} else {
-						errors = append(errors, fmt.Sprintf("Custom enforcement '%s' not found for field '%s'", enforcementName, field.Name))
 					}
 				// Handle other enforcements
 				// ...
@@ -55,4 +56,10 @@ func getCustomEnforcementFunc(customEnforcements CustomEnforcements, enforcement
 		}
 	}
 	return nil, false
+}
+
+func getCustomEnforcementNames(opt string) []string {
+	prefix := "custom:"
+	enforcementNamesStr := strings.TrimPrefix(opt, prefix)
+	return strings.Split(enforcementNamesStr, ",")
 }
