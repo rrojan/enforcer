@@ -4,7 +4,7 @@
 
 Enforcer simplifies the tedious validation process in Go applications. 
 
-Forget messy validation code, enforcer is here to enforce your will with a few Go tags and maps!
+Forget messy boilerplate-ridden validation code, enforcer is here to enforce your will with a few Go tags and maps!
 
 
 ---
@@ -28,6 +28,8 @@ type myStruct struct {
 ```  
 
 ---
+
+
 
 ### Simple validations:
 - `required`: mark a field as required
@@ -82,6 +84,8 @@ errors := enforcer.Validate(req)
 }
 ```
 
+
+
 ### Custom validations:
 
 Use `enforcer.CustomValidator` to run multiple custom validators like below
@@ -107,7 +111,7 @@ if err := c.ShouldBindJSON(&req); err != nil {
   c.JSON(400, gin.H{"error": err.Error()})
   return
 }
-customEnforcements := []map[string]func(string) string{
+customEnforcements := enforcer.CustomEnforcements{
   {
     "productTitleTemplate": func(productTitle string) string {
       // Apply validation logic here
@@ -136,4 +140,14 @@ customEnforcements := []map[string]func(string) string{
   },
 }
 errors := enforcer.CustomValidator(req, customEnforcements) // Array of error messages
+```
+
+
+### Variable validation
+
+While not often used, variable validation can be performed by using the `enforcer.ValidateVar` function
+
+```
+myAge := 23
+errors = enforcer.ValidateVar(myAge, "min:18 max:100")
 ```
