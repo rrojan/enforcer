@@ -7,6 +7,7 @@ import (
 )
 
 type CustomEnforcements []map[string]func(string) bool
+
 func CustomValidator(req interface{}, customEnforcements CustomEnforcements) []string {
 	errors := Validate(req)
 
@@ -39,8 +40,8 @@ func CustomValidator(req interface{}, customEnforcements CustomEnforcements) []s
 							errors = append(errors, fmt.Sprintf("Custom enforcement '%s' not found for field '%s'", enforcementName, field.Name))
 						}
 					}
-				// Handle other enforcements
-				// ...
+					// Handle other enforcements
+					// ...
 				}
 			}
 		}

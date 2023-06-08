@@ -25,7 +25,7 @@ type SignupReq struct {
 
 type ProductReq struct {
 	Title       string `json:"Title" enforce:"custom:productTitleTemplate"`
-	Price       int    `json:"price"`
+	Price       int    `json:"price" enforce:"custom:isNotOverpriced,isEvenNumber"`
 	IsPublished int    `json:"is_published"`
 }
 
@@ -59,34 +59,43 @@ func SignupController(c *gin.Context) {
 }
 
 func somePriceValidationQuery() int {
-	return 0
+	return 1000
 }
 
 func ProductCreateController(c *gin.Context) {
 	req := ProductReq{}
-	customEnforcements := []map[string]func(string) bool{
-		{
-			"productTitleTemplate": func(productTitle string) bool {
-				isValid := true // validation logic
-				return isValid
-			},
-			"isNotOverpriced": func(priceStr string) bool {
-				price, _ := strconv.Atoi(priceStr)
-				isValid := price < somePriceValidationQuery()
-				return isValid
-			},
-		},
-	}
-	errors := enforcer.CustomValidator(req, customEnforcements)
-
-	fmt.Println(errors)
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
+	fmt.Printf("\n%#v\n", req)
 
-	// enforcer.Validate reads the `enforce:"..."` tags and applies enforcements
+	customEnforcements := enforcer.CustomEnforcements{
+		{
+			"productTitleTemplate": func(productTitle string) bool {
+				isValid := true // validation logic
+				return isValid
+			},
+			"productTitleTemplate2": func(productTitle string) bool {
+				isValid := false // validation logic
+				return isValid
+			},
+			"isNotOverpriced": func(priceStr string) bool {
+				fmt.Println(priceStr, "wwww")
+				price, _ := strconv.Atoi(priceStr)
+				isValid := price < somePriceValidationQuery()
+				return isValid
+			},
+			"isEvenNumber": func(priceStr string) bool {
+				price, _ := strconv.Atoi(priceStr)
+				fmt.Println(price)
+				return price%2 == 0
+			},
+		},
+	}
+
+	errors := enforcer.CustomValidator(req, customEnforcements)
 
 	if len(errors) > 0 {
 		c.JSON(400, gin.H{"errors": errors})
@@ -94,5 +103,5 @@ func ProductCreateController(c *gin.Context) {
 	}
 
 	// Process the valid request here
-	c.JSON(200, gin.H{"message": "Signed up user successfully"})
+	c.JSON(200, gin.H{"message": "Created product successfully"})
 }
