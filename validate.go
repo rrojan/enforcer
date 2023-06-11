@@ -77,6 +77,11 @@ func Validate(req interface{}) []string {
 					} else {
 						errors = append(errors, fmt.Sprintf("Unsupported type for field '%s'", field.Name))
 					}
+				case strings.HasPrefix(opt, "wordCount"):
+					err := enforcements.HandleWordCount(fieldString, field.Name, opt)
+					if err != "" {
+						errors = append(errors, err)
+					}
 				case strings.HasPrefix(opt, "match"):
 					err := enforcements.HandleMatch(fieldString, field.Name, opt)
 					if err != "" {

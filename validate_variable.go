@@ -79,6 +79,11 @@ func ValidateVar(value interface{}, enforceTag string) []string {
 			if err != "" {
 				errors = append(errors, err)
 			}
+		case strings.HasPrefix(opt, "wordCount"):
+			err := enforcements.HandleWordCount(fieldValue, "", opt)
+			if err != "" {
+				errors = append(errors, err)
+			}
 		case strings.HasPrefix(opt, "enum"):
 			if t.Kind() == reflect.Int {
 				err := enforcements.HandleEnumIntOrFloat(v.Int(), "", opt)

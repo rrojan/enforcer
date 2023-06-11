@@ -47,3 +47,13 @@ func containsSpecialCharacter(s string) bool {
 	}
 	return false
 }
+
+func countWords(s string) int {
+	spaceCount := 0
+	for _, c := range s {
+		if c == ' ' {
+			spaceCount = spaceCount + 1
+		}
+	}
+	return spaceCount + 1
+}
