@@ -27,7 +27,7 @@ func ApplyDefaults(v interface{}) error {
 
 		// Check if the field has the enforce tag
 		tagValue := fieldType.Tag.Get("enforce")
-		if tagValue == "" {
+		if tagValue == "" || !strings.Contains(tagValue, "default:") {
 			continue
 		}
 
