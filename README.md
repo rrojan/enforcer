@@ -1,7 +1,7 @@
 # Enforcer
-## Simplified validation for Go apps
+### Simplified validation for Go apps
 
-<img src="https://github.com/rrojan/enforcer/assets/59971845/efd66255-8538-4d50-8d20-4212ba0f26e1" width="40%">
+<!-- <img src="https://github.com/rrojan/enforcer/assets/59971845/efd66255-8538-4d50-8d20-4212ba0f26e1" width="40%"> -->
 
 
 Enforcer simplifies the tedious validation process in Go applications. 
@@ -32,7 +32,7 @@ type myStruct struct {
 
 
 
-### Simple validations:
+## Simple validations:
 - `required`: mark a field as required
 - `between`: string length or numerical value limit
 - `min`: Minimum char length for string or minimum value for numeric type
@@ -41,6 +41,7 @@ type myStruct struct {
 - `enum`: enforce enum options for string, int, etc
 - `exclude`: check whether value is in a list of excluded values
 - `wordCount`: limit the wordcount of a string input
+- `default`: add a default value in case not provided to the field
 
 ```
 type SignupReq struct {
@@ -87,7 +88,7 @@ errors := enforcer.Validate(req)
 
 
 
-### Custom validations:
+## Custom validations:
 
 Use `enforcer.CustomValidator` to run multiple custom validators like below
 
@@ -143,8 +144,29 @@ customEnforcements := enforcer.CustomEnforcements{
 errors := enforcer.CustomValidator(req, customEnforcements) // Array of error messages
 ```
 
+## Using *default*
 
-### Variable validation
+Use ``enforce:"... default:someValue ..."`` to add a default value in case data is not provided to a struct field
+
+```
+type User struct {
+  Name      string    `enforce:"required between:2,32"`
+  UserType  string    `enforce:"default:user enum:admin,user"`
+  IsActive  int       `enforce:"default:1 enum:0,1"
+}
+```
+#### Applying the validation and setting defaults
+
+This is done by the `enforcer.Validate` function, however when `default` is used in any struct field, you must provide the address of the struct, not the struct itself for it to work. Else the default will be set on a copy of the struct, not the original struct itself
+
+```
+u := User{}
+c.ShouldBindJSON(&u) // Bind values to `u` from request data
+errors := enforcer.Validate(&u)
+```
+
+
+## Variable validation
 
 While not often used, variable validation can be performed by using the `enforcer.ValidateVar` function
 

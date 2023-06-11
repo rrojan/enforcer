@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-type CustomEnforcements []map[string]func(string) string 
+type CustomEnforcements []map[string]func(string) string
 
 func CustomValidator(req interface{}, customEnforcements CustomEnforcements) []string {
 	errors := Validate(req)
@@ -28,10 +28,10 @@ func CustomValidator(req interface{}, customEnforcements CustomEnforcements) []s
 			fieldString := ""
 			fieldType := fieldValue.Type()
 			switch fieldType.Kind() {
-				case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-					fieldString = strconv.Itoa(int(fieldValue.Int()))
-				default:
-					fieldString = fieldValue.String()
+			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+				fieldString = strconv.Itoa(int(fieldValue.Int()))
+			default:
+				fieldString = fieldValue.String()
 			}
 			enforceOpts := strings.Split(enforceTag, " ")
 
@@ -58,8 +58,8 @@ func CustomValidator(req interface{}, customEnforcements CustomEnforcements) []s
 }
 
 func getCustomEnforcementFunc(
-		customEnforcements CustomEnforcements, enforcementName string,
-	) (func(string) string, bool) {
+	customEnforcements CustomEnforcements, enforcementName string,
+) (func(string) string, bool) {
 	for _, enforcementMap := range customEnforcements {
 		if enforcementFunc, ok := enforcementMap[enforcementName]; ok {
 			return enforcementFunc, true

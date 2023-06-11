@@ -10,6 +10,7 @@ import (
 
 // Validate fields of a given struct based on `enforce` tags
 func Validate(req interface{}) []string {
+	enforcements.ApplyDefaults(req)
 	v := reflect.ValueOf(req)
 	if v.Kind() == reflect.Ptr {
 		v = v.Elem()
