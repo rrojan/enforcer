@@ -28,7 +28,7 @@ func ValidateVar(value interface{}, enforceTag string) []string {
 	for _, opt := range enforceOpts {
 		switch {
 		case opt == "required":
-			err := enforcements.HandleRequired(fieldValue, "")
+			err := enforcements.HandleRequired(v, "")
 			if err != "" {
 				errors = append(errors, err)
 			}

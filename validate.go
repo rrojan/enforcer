@@ -32,7 +32,7 @@ func Validate(req interface{}) []string {
 			for _, opt := range enforceOpts {
 				switch {
 				case opt == "required":
-					err := enforcements.HandleRequired(fieldString, field.Name)
+					err := enforcements.HandleRequired(fieldValue, field.Name)
 					if err != "" {
 						errors = append(errors, err)
 					}

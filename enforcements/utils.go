@@ -1,6 +1,7 @@
 package enforcements
 
 import (
+	"reflect"
 	"regexp"
 	"strings"
 )
@@ -9,6 +10,32 @@ func ExtractNumber(str string) string {
 	re := regexp.MustCompile(`\d+`)
 	match := re.FindString(str)
 	return match
+}
+
+func IsString(k reflect.Kind) bool {
+	return k == reflect.String
+}
+
+func IsIntType(k reflect.Kind) bool {
+	switch k {
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return true
+	default:
+		return false
+	}
+}
+
+func IsFloatType(k reflect.Kind) bool {
+	switch k {
+	case reflect.Float32, reflect.Float64:
+		return true
+	default:
+		return false
+	}
+}
+
+func IsEmpty(v reflect.Value) bool{
+	return (IsString(v.Kind()) && v.String() == "") || (IsIntType(v.Kind()) && v.Int() == 0) || (IsFloatType(v.Kind()) && v.Float() == 0.0)
 }
 
 func containsUppercase(s string) bool {
