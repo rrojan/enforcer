@@ -27,6 +27,13 @@ func ApplyDefaults(v interface{}) error {
 
 		// Check if the field has the enforce tag
 		tagValue := fieldType.Tag.Get("enforce")
+
+		if strings.Contains(tagValue, "prohibit") {
+			// If we are using prohibit with this field, reset the value
+			// to whatever the Zero value of that type is as a default
+			fieldValue.Set(reflect.Zero(fieldType.Type))
+		}
+
 		if tagValue == "" || !strings.Contains(tagValue, "default:") {
 			continue
 		}
