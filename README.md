@@ -40,7 +40,7 @@ type myStruct struct {
 2. [Setting Defaults & Prohibits](#setting-defaults-and-prohibits)
     - [Setting default values for common data types](#setting-default-values)
     - [Setting default time (custom / time now, after or before)](#setting-default-time)
-    - [Prohibitted fields](#prohibited-fields)
+    - [Prohibited fields](#prohibited-fields)
 3. [Custom Validations](#custom-validations)
     - [Using `custom` to bind custom validations to a field](#using-custom-to-bind-validations)
     - [Applying custom validation](#applying-the-custom-validations)
@@ -109,6 +109,51 @@ errors := enforcer.Validate(req)
 }
 ```
 
+
+## Setting Defaults and Prohibits
+
+Enforcer allows you to set default values for struct fields. Default values take over in case values aren't provided while validating the struct.
+
+### Setting Default Values
+```
+type User struct {
+    Email     string `enforce:"required"`
+    Username  string `enforce:"default:Anonymous"`
+    UserType  int    `enforce:"enum:0,1,2 default:0"
+    Score     float  `enforce:"default:5.0 between:0,10"`
+}
+```
+
+### Setting Default Time
+Time can be set to a custom value by default in the format "YYYY-MM-DD HH;MM;SS +TZHH:TZMM"
+
+You can also set default to the current time using timeNow. Time before and after current date can be done using a semantic addition like `timeNow-1_day` or `timeNow+10_days`
+
+```
+type Coupon struct {
+    ValidFrom    time.Time  `enforce:"default:2023-06-15 00;00;00 +5;45"`
+    ActivatedAt  time.Time  `enforce:"default:timeNow"`
+    NotifyAt     time.Time  `enforce:"default:timeNow+1_minute"`
+    NextCoupon   time.Time `enforce:"default:timeNow+30_minutes"`
+    ExpiresAt    time.Time  `enforce:"default:timeNow+5_days"`
+}
+```
+
+Note that you must use semicolons `;` instead of `:` while referring to time and timezone offsets because of the way tag parsing in Go works.
+
+### Prohibited Fields
+
+There are certain cases where a field input must never be binded from user input, or where user input should not bypass the default value. In these cases, `prohibit` will reset the field to its corresponding zero or default value.
+
+```
+type User struct {
+    Username  string  `enforce:"required"`
+    Password  string  `enforce:"required match:password"`
+
+    AuthUID   string  `enforce:"prohibit"` // Even if user provides the `AuthUID` field, it will be reset to null value
+    UserType  string  `enforce:"prohibit default:user enum:user,admin"` // Using prohibit means that User won't be able to override default
+}
+```
 
 
 ## Custom validations:
