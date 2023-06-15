@@ -29,7 +29,7 @@ E.g.: `name` is a *required* field *between* 2-64 chars, and should be *"Spaced 
 type myStruct struct {
   name string `enforce:"required between:2,64 matches:^[A-Z][a-z]+(?: [A-Z][a-z]+)*"`
 }
-```  
+```
 
 ---
 ### Contents
@@ -45,6 +45,7 @@ type myStruct struct {
     - [Using `custom` to bind custom validations to a field](#using-custom-to-bind-validations)
     - [Applying custom validation](#applying-the-custom-validations)
 4. [Single Variable Validation](#variable-validation)
+5. [Example projects](#example-projects)
 
 ---
 
@@ -247,3 +248,6 @@ While not often used, variable validation can be performed by using the `enforce
 myAge := 23
 errors = enforcer.ValidateVar(myAge, "min:18 max:100")
 ```
+
+### Example Projects
+- [Enforcer Examples](https://github.com/rrojan/enforcer-examples)
