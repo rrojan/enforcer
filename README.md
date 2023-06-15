@@ -133,7 +133,7 @@ errors := enforcer.Validate(&c) // Note we are using '&'
 ```
 
 ### Setting Default Time
-Time can be set to a custom value by default in the format "YYYY-MM-DD HH;MM;SS +TZHH:TZMM"
+Time can be set to a custom value by default in the format "YYYY-MM-DD HH;MM;SS +TZHH;TZMM"
 
 You can also set default to the current time using timeNow. Time before and after current date can be done using a semantic addition like `timeNow-1_day` or `timeNow+10_days`
 
