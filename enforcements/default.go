@@ -1,6 +1,7 @@
 package enforcements
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"strconv"
@@ -85,12 +86,31 @@ func ApplyDefaults(v interface{}) error {
 				if fieldValue.Interface().(time.Time).IsZero() {
 					defaultValue := getDefaultValue(tagValue)
 					defaultValue = strings.ReplaceAll(defaultValue, ";", ":")
-					// Parse the default value as a time string
-					defaultTime, err := time.Parse("2006-01-02 15:04:05 -07:00", defaultValue)
-					if err != nil {
-						return fmt.Errorf("failed to convert default value to time: %w", err)
-					}
+					defaultTime := time.Time{}
+					var err error
+					if strings.Contains(defaultValue, "timeNow") {
+						defaultTime = time.Now()
+						shiftStr := strings.ReplaceAll(defaultValue, "timeNow", "")
+						shiftStr = strings.ReplaceAll(shiftStr, "+", "")
+						shiftStr = strings.ReplaceAll(shiftStr, "-", "")
 
+						if shiftStr != "" {
+							timeShift, err := getTimeSetValue(shiftStr)
+							if err != nil {
+								return err
+							}
+							if strings.Contains(defaultValue, "+") {
+								defaultTime = defaultTime.Add(timeShift)
+							} else if strings.Contains(defaultValue, "-") {
+								defaultTime = defaultTime.Add(time.Duration(-1) * timeShift)
+							}
+						}
+					} else {
+						defaultTime, err = time.Parse("2006-01-02 15:04:05 -07:00", defaultValue)
+						if err != nil {
+							return fmt.Errorf("failed to convert default value to time: %w", err)
+						}
+					}
 					// Set the default value for the field
 					fieldValue.Set(reflect.ValueOf(defaultTime))
 				}
@@ -99,6 +119,34 @@ func ApplyDefaults(v interface{}) error {
 	}
 
 	return nil
+}
+
+func getTimeSetValue(t string) (time.Duration, error) {
+	values := strings.Split(t, "_")
+	duration, err := strconv.Atoi(values[0])
+	if err != nil {
+		return time.Second, errors.New("error parsing time shift")
+	}
+	shiftMap := map[string]time.Duration {
+		"year": 365 * 24 * time.Hour,
+		"years": 365 * 24 * time.Hour,
+		"month": 30 * 24 * time.Hour,
+		"months": 30 * 24 * time.Hour,
+		"day": 24 * time.Hour,
+		"days": 24 * time.Hour,
+		"hour": time.Hour,
+		"hours": time.Hour,	
+		"minute": time.Minute,	
+		"minutes": time.Minute,	
+		"second": time.Second,	
+		"seconds": time.Second,	
+	}
+	shift, exists := shiftMap[values[1]]
+	if !exists {
+		return time.Second, errors.New("invalid time unit")
+	}
+
+	return time.Duration(duration) * shift, nil
 }
 
 func getDefaultValue(tagValue string) string {
