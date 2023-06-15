@@ -140,6 +140,13 @@ type Coupon struct {
 }
 ```
 
+Then, validate by using a pass by reference instead of pass by value for the struct
+
+```
+c := Coupon{ ... }
+errors := enforcer.Validate(&c) // Note we are using '&'
+```
+
 Note that you must use semicolons `;` instead of `:` while referring to time and timezone offsets because of the way tag parsing in Go works.
 
 ### Prohibited Fields
