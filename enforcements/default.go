@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func ApplyDefaults(v interface{}) error {
@@ -39,13 +40,14 @@ func ApplyDefaults(v interface{}) error {
 		}
 
 		// Check if the field is empty (zero value)
-		if fieldValue.Kind() == reflect.String && fieldValue.String() == "" {
-			defaultValue := getDefaultValue(tagValue)
-			// Set the default value for the field
-			fieldValue.SetString(defaultValue)
-		} else if fieldValue.Kind() == reflect.Int || fieldValue.Kind() == reflect.Int8 ||
-			fieldValue.Kind() == reflect.Int16 || fieldValue.Kind() == reflect.Int32 ||
-			fieldValue.Kind() == reflect.Int64 {
+		switch fieldValue.Kind() {
+		case reflect.String:
+			if fieldValue.String() == "" {
+				defaultValue := getDefaultValue(tagValue)
+				// Set the default value for the field
+				fieldValue.SetString(defaultValue)
+			}
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 			if fieldValue.Int() == 0 {
 				defaultValue := getDefaultValue(tagValue)
 				// Convert the default value to the appropriate int type
@@ -56,9 +58,7 @@ func ApplyDefaults(v interface{}) error {
 				// Set the default value for the field
 				fieldValue.SetInt(defaultIntValue)
 			}
-		} else if fieldValue.Kind() == reflect.Uint || fieldValue.Kind() == reflect.Uint8 ||
-			fieldValue.Kind() == reflect.Uint16 || fieldValue.Kind() == reflect.Uint32 ||
-			fieldValue.Kind() == reflect.Uint64 {
+		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 			if fieldValue.Uint() == 0 {
 				defaultValue := getDefaultValue(tagValue)
 				// Convert the default value to the appropriate uint type
@@ -69,7 +69,7 @@ func ApplyDefaults(v interface{}) error {
 				// Set the default value for the field
 				fieldValue.SetUint(defaultUintValue)
 			}
-		} else if fieldValue.Kind() == reflect.Float32 || fieldValue.Kind() == reflect.Float64 {
+		case reflect.Float32, reflect.Float64:
 			if fieldValue.Float() == 0.0 {
 				defaultValue := getDefaultValue(tagValue)
 				// Convert the default value to the appropriate float type
@@ -80,6 +80,21 @@ func ApplyDefaults(v interface{}) error {
 				// Set the default value for the field
 				fieldValue.SetFloat(defaultFloatValue)
 			}
+		case reflect.Struct:
+			if fieldValue.Type() == reflect.TypeOf(time.Time{}) {
+				if fieldValue.Interface().(time.Time).IsZero() {
+					defaultValue := getDefaultValue(tagValue)
+					defaultValue = strings.ReplaceAll(defaultValue, ";", ":")
+					// Parse the default value as a time string
+					defaultTime, err := time.Parse("2006-01-02 15:04:05 -07:00", defaultValue)
+					if err != nil {
+						return fmt.Errorf("failed to convert default value to time: %w", err)
+					}
+
+					// Set the default value for the field
+					fieldValue.Set(reflect.ValueOf(defaultTime))
+				}
+			}
 		}
 	}
 
@@ -87,7 +102,18 @@ func ApplyDefaults(v interface{}) error {
 }
 
 func getDefaultValue(tagValue string) string {
-	// Workaround to using reflect again but for now it won't support spaces ;(
-	defaultValue := strings.Split(tagValue, ":")[1]
-	return strings.Split(defaultValue, " ")[0]
+	defaultValue := ""
+	// if strings.Contains(tagValue, "'") {
+	// 	re := regexp.MustCompile(`'([^']*)'`)
+	// 	match := re.FindStringSubmatch(tagValue)
+
+	// 	if len(match) >= 2 {
+	// 		result := match[1]
+	// 		fmt.Println(result)
+	// 	}
+	// }
+	defaultValue = strings.Split(tagValue, ":")[1]
+	return strings.TrimSpace(defaultValue)
+	// return strings.Split(defaultValue, " ")[0]
+	// TODO: this can mess things up
 }
