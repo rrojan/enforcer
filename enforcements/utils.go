@@ -84,3 +84,12 @@ func countWords(s string) int {
 	}
 	return spaceCount + 1
 }
+
+func ArrayContainsSubstr(a []string, s string) bool {
+	for _, elem := range a {
+		if strings.Contains(elem, s) {
+			return true
+		}
+	}
+	return false
+}
