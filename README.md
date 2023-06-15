@@ -125,6 +125,13 @@ type User struct {
 }
 ```
 
+Then, validate by using a pass by reference instead of pass by value for the struct
+
+```
+c := Coupon{ ... }
+errors := enforcer.Validate(&c) // Note we are using '&'
+```
+
 ### Setting Default Time
 Time can be set to a custom value by default in the format "YYYY-MM-DD HH;MM;SS +TZHH:TZMM"
 
@@ -138,13 +145,6 @@ type Coupon struct {
     NextCoupon   time.Time `enforce:"default:timeNow+30_minutes"`
     ExpiresAt    time.Time  `enforce:"default:timeNow+5_days"`
 }
-```
-
-Then, validate by using a pass by reference instead of pass by value for the struct
-
-```
-c := Coupon{ ... }
-errors := enforcer.Validate(&c) // Note we are using '&'
 ```
 
 Note that you must use semicolons `;` instead of `:` while referring to time and timezone offsets because of the way tag parsing in Go works.
