@@ -5,7 +5,7 @@
 ### Simplified validation for Go apps
 
 <!-- <img src="https://github.com/rrojan/enforcer/assets/59971845/f3be7493-344d-41ab-a2eb-f69b980b030f" width="20%"> -->
-<img src="https://github.com/rrojan/enforcer/assets/59971845/c07d6a27-931f-4d3c-a6aa-214fa9a39b99" alt="enforcer-gopher-logo" width="20%">
+<img src="https://github.com/rrojan/enforcer/assets/59971845/c07d6a27-931f-4d3c-a6aa-214fa9a39b99" alt="enforcer-gopher-logo" width="25%">
 
 
 Enforcer simplifies the tedious validation process in Go applications. 
@@ -29,7 +29,7 @@ E.g.: `name` is a *required* field *between* 2-64 chars, and should be *"Spaced 
 type myStruct struct {
   name string `enforce:"required between:2,64 matches:^[A-Z][a-z]+(?: [A-Z][a-z]+)*"`
 }
-```  
+```
 
 ---
 ### Contents
@@ -45,6 +45,7 @@ type myStruct struct {
     - [Using `custom` to bind custom validations to a field](#using-custom-to-bind-validations)
     - [Applying custom validation](#applying-the-custom-validations)
 4. [Single Variable Validation](#variable-validation)
+5. [Example projects](#example-projects)
 
 ---
 
@@ -124,8 +125,15 @@ type User struct {
 }
 ```
 
+Then, validate by using a pass by reference instead of pass by value for the struct
+
+```
+c := Coupon{ ... }
+errors := enforcer.Validate(&c) // Note we are using '&'
+```
+
 ### Setting Default Time
-Time can be set to a custom value by default in the format "YYYY-MM-DD HH;MM;SS +TZHH:TZMM"
+Time can be set to a custom value by default in the format "YYYY-MM-DD HH;MM;SS +TZHH;TZMM"
 
 You can also set default to the current time using timeNow. Time before and after current date can be done using a semantic addition like `timeNow-1_day` or `timeNow+10_days`
 
@@ -217,27 +225,6 @@ customEnforcements := enforcer.CustomEnforcements{
 errors := enforcer.CustomValidator(req, customEnforcements) // Array of error messages
 ```
 
-## Using *default*
-
-Use ``enforce:"... default:someValue ..."`` to add a default value in case data is not provided to a struct field
-
-```
-type User struct {
-  Name      string    `enforce:"required between:2,32"`
-  UserType  string    `enforce:"default:user enum:admin,user"`
-  IsActive  int       `enforce:"default:1 enum:0,1"
-}
-```
-#### Applying the validation and setting defaults
-
-This is done by the `enforcer.Validate` function, however when `default` is used in any struct field, you must provide the address of the struct, not the struct itself for it to work. Else the default will be set on a copy of the struct, not the original struct itself
-
-```
-u := User{}
-c.ShouldBindJSON(&u) // Bind values to `u` from request data
-errors := enforcer.Validate(&u)
-```
-
 
 ## Variable validation
 
@@ -247,3 +234,6 @@ While not often used, variable validation can be performed by using the `enforce
 myAge := 23
 errors = enforcer.ValidateVar(myAge, "min:18 max:100")
 ```
+
+### Example Projects
+- [Enforcer Examples](https://github.com/rrojan/enforcer-examples)
