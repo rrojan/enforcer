@@ -89,6 +89,8 @@ type SignupReq struct {
   
   // Password -> Enforce "required", "min" char limit, "max" char limit and "match" for password validity
   Password string `json:"password" enforce:"required match:password"`
+
+  AuthUID string `enforce:"prohibit"`
 }
 ```
 
