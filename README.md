@@ -5,7 +5,7 @@
 ### Simplified validation for Go apps
 
 <!-- <img src="https://github.com/rrojan/enforcer/assets/59971845/f3be7493-344d-41ab-a2eb-f69b980b030f" width="20%"> -->
-<img src="https://github.com/rrojan/enforcer/assets/59971845/c07d6a27-931f-4d3c-a6aa-214fa9a39b99" alt="enforcer-gopher-logo" width="20%">
+<img src="https://github.com/rrojan/enforcer/assets/59971845/c07d6a27-931f-4d3c-a6aa-214fa9a39b99" alt="enforcer-gopher-logo" width="25%">
 
 
 Enforcer simplifies the tedious validation process in Go applications. 
@@ -89,8 +89,6 @@ type SignupReq struct {
   
   // Password -> Enforce "required", "min" char limit, "max" char limit and "match" for password validity
   Password string `json:"password" enforce:"required match:password"`
-
-  AuthUID string `enforce:"prohibit"`
 }
 ```
 
