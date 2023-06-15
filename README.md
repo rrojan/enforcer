@@ -225,27 +225,6 @@ customEnforcements := enforcer.CustomEnforcements{
 errors := enforcer.CustomValidator(req, customEnforcements) // Array of error messages
 ```
 
-## Using *default*
-
-Use ``enforce:"... default:someValue ..."`` to add a default value in case data is not provided to a struct field
-
-```
-type User struct {
-  Name      string    `enforce:"required between:2,32"`
-  UserType  string    `enforce:"default:user enum:admin,user"`
-  IsActive  int       `enforce:"default:1 enum:0,1"
-}
-```
-#### Applying the validation and setting defaults
-
-This is done by the `enforcer.Validate` function, however when `default` is used in any struct field, you must provide the address of the struct, not the struct itself for it to work. Else the default will be set on a copy of the struct, not the original struct itself
-
-```
-u := User{}
-c.ShouldBindJSON(&u) // Bind values to `u` from request data
-errors := enforcer.Validate(&u)
-```
-
 
 ## Variable validation
 
