@@ -161,7 +161,7 @@ func getDefaultValue(tagValue string) string {
 	// 	}
 	// }
 	defaultValue = strings.Split(tagValue, ":")[1]
-	return strings.TrimSpace(defaultValue)
-	// return strings.Split(defaultValue, " ")[0]
-	// TODO: this can mess things up
+	// return strings.TrimSpace(defaultValue)
+	return strings.Split(defaultValue, " ")[0]
+	// TODO: this can mess things up but we will do this for the meanwhile
 }
