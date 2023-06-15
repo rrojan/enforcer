@@ -1,12 +1,16 @@
-# Enforcer
+# Enforcer 
+
+
+
 ### Simplified validation for Go apps
 
-<!-- <img src="https://github.com/rrojan/enforcer/assets/59971845/efd66255-8538-4d50-8d20-4212ba0f26e1" width="40%"> -->
+<!-- <img src="https://github.com/rrojan/enforcer/assets/59971845/f3be7493-344d-41ab-a2eb-f69b980b030f" width="20%"> -->
+<img src="https://github.com/rrojan/enforcer/assets/59971845/c07d6a27-931f-4d3c-a6aa-214fa9a39b99" alt="enforcer-gopher-logo" width="20%">
 
 
 Enforcer simplifies the tedious validation process in Go applications. 
 
-Forget messy boilerplate-ridden validation code, enforcer is here to enforce your will with a few Go tags and maps!
+Forget messy boilerplate-ridden code, enforcer is here to enforce your will with a handful of simple Go tags!
 
 ---
 
@@ -20,19 +24,35 @@ go get -u github.com/rrojan/enforcer
 ### Basic Usage:
 - Use ``enforce`` to validate enforcements
 
-E.g. 
+E.g.: `name` is a *required* field *between* 2-64 chars, and should be *"Spaced and Cased"*
 ```
 type myStruct struct {
-  // Name is a required field with 2-64 char limit and should be "Spaced And Camel Cased"
   name string `enforce:"required between:2,64 matches:^[A-Z][a-z]+(?: [A-Z][a-z]+)*"`
 }
 ```  
 
 ---
+### Contents
+1. [Simple Validations](#simple-validations)
+    - [Validations list](#validations-list)
+    - [Binding simple validations with `enforce`](#binding-simple-validations-with-enforce)
+    - [Applying the validation](#applying-simple-validations)
+2. [Setting Defaults & Prohibits](#setting-defaults-and-prohibits)
+    - [Setting default values for common data types](#setting-default-values)
+    - [Setting default time (custom / time now, after or before)](#setting-default-time)
+    - [Prohibited fields](#prohibited-fields)
+3. [Custom Validations](#custom-validations)
+    - [Using `custom` to bind custom validations to a field](#using-custom-to-bind-validations)
+    - [Applying custom validation](#applying-the-custom-validations)
+4. [Single Variable Validation](#variable-validation)
+
+---
 
 
+## Simple validations
 
-## Simple validations:
+### Validations list
+
 - `required`: mark a field as required
 - `between`: string length or numerical value limit
 - `min`: Minimum char length for string or minimum value for numeric type
@@ -42,6 +62,9 @@ type myStruct struct {
 - `exclude`: check whether value is in a list of excluded values
 - `wordCount`: limit the wordcount of a string input
 - `default`: add a default value in case not provided to the field
+- `prohibit`: make sure a field is empty (user input cannot populate a struct field)
+
+### Binding simple validations with enforce
 
 ```
 type SignupReq struct {
@@ -68,7 +91,7 @@ type SignupReq struct {
 }
 ```
 
-#### Applying the validation
+#### Applying simple validations
 
 ```
 req := SignupReq{}
@@ -87,10 +110,57 @@ errors := enforcer.Validate(req)
 ```
 
 
+## Setting Defaults and Prohibits
+
+Enforcer allows you to set default values for struct fields. Default values take over in case values aren't provided while validating the struct.
+
+### Setting Default Values
+```
+type User struct {
+    Email     string `enforce:"required"`
+    Username  string `enforce:"default:Anonymous"`
+    UserType  int    `enforce:"enum:0,1,2 default:0"
+    Score     float  `enforce:"default:5.0 between:0,10"`
+}
+```
+
+### Setting Default Time
+Time can be set to a custom value by default in the format "YYYY-MM-DD HH;MM;SS +TZHH:TZMM"
+
+You can also set default to the current time using timeNow. Time before and after current date can be done using a semantic addition like `timeNow-1_day` or `timeNow+10_days`
+
+```
+type Coupon struct {
+    ValidFrom    time.Time  `enforce:"default:2023-06-15 00;00;00 +5;45"`
+    ActivatedAt  time.Time  `enforce:"default:timeNow"`
+    NotifyAt     time.Time  `enforce:"default:timeNow+1_minute"`
+    NextCoupon   time.Time `enforce:"default:timeNow+30_minutes"`
+    ExpiresAt    time.Time  `enforce:"default:timeNow+5_days"`
+}
+```
+
+Note that you must use semicolons `;` instead of `:` while referring to time and timezone offsets because of the way tag parsing in Go works.
+
+### Prohibited Fields
+
+There are certain cases where a field input must never be binded from user input, or where user input should not bypass the default value. In these cases, `prohibit` will reset the field to its corresponding zero or default value.
+
+```
+type User struct {
+    Username  string  `enforce:"required"`
+    Password  string  `enforce:"required match:password"`
+
+    AuthUID   string  `enforce:"prohibit"` // Even if user provides the `AuthUID` field, it will be reset to null value
+    UserType  string  `enforce:"prohibit default:user enum:user,admin"` // Using prohibit means that User won't be able to override default
+}
+```
+
 
 ## Custom validations:
 
-Use `enforcer.CustomValidator` to run multiple custom validators like below
+### Using custom to bind validations
+
+Use `custom:` and `enforcer.CustomValidator` to run multiple custom validators like below
 
 ```
 type ProductReq struct {
@@ -105,8 +175,11 @@ type ProductReq struct {
 }	
 ```
 
-#### Applying the validation
+#### Applying the custom validations
 
+Use `enforcer.CustomValidator` to validate and run the custom bindings through a `enforcer.CustomEnforcements` map
+
+Note that the argument of the CustomEnforcement function is always a string, regardless of what the actual field type might be
 ```
 req := ProductReq{}
 if err := c.ShouldBindJSON(&req); err != nil {
