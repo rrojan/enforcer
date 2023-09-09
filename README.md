@@ -24,7 +24,7 @@ go get -u github.com/rrojan/enforcer
 ### Basic Usage:
 - Use ``enforce`` to validate enforcements
 
-E.g.: `name` is a *required* field *between* 2-64 chars, and should be *"Spaced and Cased"*
+E.g.: `name` is a *required* field *between* 2-64 chars, and should *match* a pattern
 ```
 type myStruct struct {
   name string `enforce:"required between:2,64 matches:^[A-Z][a-z]+(?: [A-Z][a-z]+)*"`
