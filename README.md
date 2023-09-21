@@ -24,10 +24,10 @@ go get -u github.com/rrojan/enforcer
 ### Basic Usage:
 - Use ``enforce`` to validate enforcements
 
-E.g.: `name` is a *required* field *between* 2-64 chars, and should *match* a pattern
+E.g.: `name` is a *required* field *between* 2-64 chars, and should *match* a pattern. *Default* value is "Unnamed"
 ```
 type Hooman struct {
-  Name string `enforce:"required default: Anonymous between:2,64 matches:^[A-Z][a-z]+(?: [A-Z][a-z]+)*"`
+  Name string `enforce:"required default:Unnamed between:2,64 matches:^[A-Z][a-z]+(?: [A-Z][a-z]+)*"`
 }
 ```
 
